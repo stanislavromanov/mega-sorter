@@ -30,6 +30,6 @@ public static class Program
         }
 
         Console.WriteLine($@"Writing {fileSizeInMb}mb to {fileName} ...");
-        await FileGeneratorService.GenerateFile(fileName, fileSizeInMb);
+        await FileGeneratorService.GenerateFileAsync(fileName, fileSizeInMb);
     }
 }

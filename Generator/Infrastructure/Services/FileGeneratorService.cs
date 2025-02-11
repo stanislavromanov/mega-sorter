@@ -4,11 +4,11 @@ namespace Generator.Infrastructure.Services;
 
 public static class FileGeneratorService
 {
-    public static async Task GenerateFile(string fileName, int fileSizeInMb)
+    public static async Task GenerateFileAsync(string fileName, int fileSizeInMb)
     {
         File.Delete(fileName); // I found that sometimes it hangs if I do not delete the file beforehand
 
-        var rnd = new Random();
+        var random = new ThreadLocal<Random>(() => new Random());
         var companies = new List<string>
             { "Apple", "Microsoft", "Google", "Facebook", "Amazon", "Tesla", "Netflix", "IBM", "Intel", "Oracle" };
 
@@ -22,10 +22,11 @@ public static class FileGeneratorService
         // In reality it should be asked to GPT/Internet and tested
 
         // From my limited tests when I increase maxTreads * 2 performance seems to be same or even worse
-        // When the maxThreads = CPU cores performance is stable ~30 seconds
+        // When the maxThreads = CPU cores performance is stable ~10 seconds
         // Test: time dotnet run --configuration=Release -- --file-size 1gb --file-name test.txt
         var tasks = Enumerable.Range(0, maxThreads).Select(i => Task.Run(() =>
         {
+            var rnd = random.Value!;
             var tempFile = Path.Combine(tempPath, $"temp_{i}.txt");
             tempFiles.Add(tempFile);
 
